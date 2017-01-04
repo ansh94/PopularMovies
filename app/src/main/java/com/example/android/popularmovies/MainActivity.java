@@ -1,11 +1,16 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,8 +23,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     public MoviesAdapter mAdapter;
 
-    private static final String MOVIE_DB_URL =
-            "https://api.themoviedb.org/3/movie/popular?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+    /** Tag for the log messages */
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final String MOVIE_DB_BASE_URL =
+            "https://api.themoviedb.org/3/movie/";
+
+    private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+
+    private String sortBy;
     private List<Movie> moviesList;
 
     private TextView mErrorMessageDisplay;
@@ -51,7 +63,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         mRecyclerView.setAdapter(mAdapter);
 
-        loadMovieData(MOVIE_DB_URL);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_sort_by_key),
+                getString(R.string.settings_sort_by_default)
+        );
+
+        final String Url = MOVIE_DB_BASE_URL+orderBy+API_KEY;
+        Log.d(LOG_TAG,"Final URL = "+ Url);
+
+        loadMovieData(Url);
 
 //        MovieAsyncTask asyncTask = new MovieAsyncTask();
 //        asyncTask.execute(MOVIE_DB_URL);
@@ -137,5 +159,22 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private void updateUi(List<Movie> movies){
         mAdapter.setMovieList(movies);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_settings){
+            Intent settingsIntent = new Intent(this,SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

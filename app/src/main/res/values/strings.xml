@@ -3,4 +3,25 @@
     <string name="error_message">
         An error has occurred. Please try again by clicking REFRESH
     </string>
+
+    <!-- Settings Activity Title [CHAR LIMIT=NONE] -->
+    <string name="detail_title">Movie Details</string>
+
+    <!-- Settings Menu Item [CHAR LIMIT=NONE] -->
+    <string name="settings_menu_item">Settings</string>
+    <!-- Settings Activity Title [CHAR LIMIT=NONE] -->
+    <string name="settings_title">Movie Settings</string>
+
+    <!-- Strings For Order-By Preference [CHAR LIMIT=30] -->
+    <string name="settings_sort_by_label">Sort By</string>
+    <string name="settings_sort_by_key" translatable="false">"sort_by"</string>
+    <string name="settings_sort_by_default" translatable="false">@string/settings_sort_by_popular_value</string>
+
+    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
+    <string name="settings_sort_by_popular_label">Popular</string>
+    <string name="settings_sort_by_popular_value" translatable="false">popular</string>
+
+    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
+    <string name="settings_sort_by_top_rated_label">Top Rated</string>
+    <string name="settings_sort_by_top_rated_value" translatable="false">top_rated</string>
 </resources>
