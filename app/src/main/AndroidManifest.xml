@@ -20,6 +20,9 @@
         <activity
             android:name=".DetailActivity"
             android:label="@string/detail_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.popularmovies.MainActivity"/>
         </activity>
         <activity
             android:name=".SettingsActivity"
