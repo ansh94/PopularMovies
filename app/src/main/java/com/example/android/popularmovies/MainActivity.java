@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     public MoviesAdapter mAdapter;
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String MOVIE_DB_BASE_URL =
@@ -61,9 +63,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mRecyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
 
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
-        mAdapter = new MoviesAdapter(this,this);
+        mAdapter = new MoviesAdapter(this, this);
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -74,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 getString(R.string.settings_sort_by_default)
         );
 
-        final String Url = MOVIE_DB_BASE_URL+orderBy+API_KEY;
-        Log.d(LOG_TAG,"Final URL = "+ Url);
+        final String Url = MOVIE_DB_BASE_URL + orderBy + API_KEY;
+        Log.d(LOG_TAG, "Final URL = " + Url);
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -95,19 +97,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
             showErrorMessage("No Internet Connection");
         }
-
-
-
-
-//        MovieAsyncTask asyncTask = new MovieAsyncTask();
-//        asyncTask.execute(MOVIE_DB_URL);
-
-//        List<Movie> movies = new ArrayList<>();
-
-//        for (int i = 0; i < 25; i++) {
-//            movies.add(new Movie());
-//        }
-//        mAdapter.setMovieList(movies);
 
 
     }
@@ -136,16 +125,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public void onClick(Movie movie) {
-//        String toastMessage = "Movie name: " + movie.getTitle();
-//        Toast toast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
-//        toast.show();
-
-        Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-        intent.putExtra("Movie",movie);
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra("Movie", movie);
         startActivity(intent);
     }
 
-    private class MovieAsyncTask extends AsyncTask<String, Void, List<Movie>>{
+    private class MovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
 
         @Override
         protected void onPreExecute() {
@@ -156,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         @Override
         protected List<Movie> doInBackground(String... urls) {
             // Don't perform the request if there are no URLs, or the first URL is null.
-            if(urls.length < 1 || urls[0] == null){
+            if (urls.length < 1 || urls[0] == null) {
                 return null;
             }
 
@@ -177,26 +162,24 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 showErrorMessage("Problem getting movies data");
             }
 
-            // Update the information displayed to the user.
-//            updateUi(movies);
         }
     }
 
-    private void updateUi(List<Movie> movies){
+    private void updateUi(List<Movie> movies) {
         mAdapter.setMovieList(movies);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main,menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_settings){
-            Intent settingsIntent = new Intent(this,SettingsActivity.class);
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingsIntent);
             return true;
         }

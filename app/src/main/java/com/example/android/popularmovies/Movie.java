@@ -23,17 +23,6 @@ public class Movie implements Parcelable {
 
     private static final String IMAGE_SIZE = "w185/";
 
-//    public Movie(String poster,String title,String description,double userRating,String releaseDate){
-//        mTitle = title;
-//        mPoster = poster;
-//        mDescription = description;
-//        mUserRating = userRating;
-//        mReleaseDate = releaseDate;
-//    }
-
-//    private String description;
-//
-//    private String backdrop;
 
     // Normal actions performed by class, since this is still a normal object!
     public Movie() {
@@ -89,10 +78,8 @@ public class Movie implements Parcelable {
     }
 
 
-
     public String getPoster() {
-//        return "http://t2.gstatic.com/images?q=tbn:ANd9GcQW3LbpT94mtUG1PZIIzJNxmFX399wr_NcvoppJ82k7z99Hx6in";
-        return IMAGE_BASE_URL+IMAGE_SIZE+mPoster;
+        return IMAGE_BASE_URL + IMAGE_SIZE + mPoster;
     }
 
     @Override
@@ -132,8 +119,5 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
-
-
-
 
 }

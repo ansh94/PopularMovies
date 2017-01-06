@@ -25,20 +25,22 @@ import java.util.List;
 public final class MovieUtils {
 
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = MovieUtils.class.getSimpleName();
 
     /**
      * Create a private constructor because no one should ever create a {@link } object.
      * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
+     * directly from the class name MovieUtils (and an object instance of MovieUtils is not needed).
      */
     private MovieUtils() {
     }
 
 
     public static List<Movie> fetchMovieData(String requestUrl) {
-        Log.i(LOG_TAG,"TEST: fetchEarthquakeData() called.....");
+        Log.i(LOG_TAG, "TEST: fetchMovieData() called.....");
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -59,17 +61,14 @@ public final class MovieUtils {
     }
 
 
-
-
     /**
      * Returns new URL object from the given string URL.
      */
-    private static URL createUrl(String stringUrl){
+    private static URL createUrl(String stringUrl) {
         URL url = null;
-        try{
+        try {
             url = new URL(stringUrl);
-        }
-        catch (MalformedURLException e){
+        } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "Error with creating URL ", e);
         }
         return url;
@@ -78,7 +77,7 @@ public final class MovieUtils {
     /**
      * Make an HTTP request to the given URL and return a String as the response.
      */
-    private static String makeHttpRequest(URL url) throws IOException{
+    private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -157,9 +156,6 @@ public final class MovieUtils {
                 // Get a single earthquake at position i within the list of earthquakes
                 JSONObject currentMovie = resultsArray.getJSONObject(i);
 
-                // For a given earthquake, extract the JSONObject associated with the
-                // key called "properties", which represents a list of all properties
-                // for that earthquake.
 
                 // Extract the value for the key called "mag"
                 String posterPath = currentMovie.getString("poster_path");

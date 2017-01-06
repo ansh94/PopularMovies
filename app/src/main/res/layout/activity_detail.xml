@@ -22,7 +22,7 @@
             android:paddingTop="20dp"
             android:textColor="@android:color/white"
             android:layout_marginBottom="20dp"
-            android:text="Movie Title"
+            android:text="@string/movie_title"
             android:textSize="50sp"/>
 
         <LinearLayout
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="25dp"
                     android:layout_marginTop="30dp"
-                    android:text="2016"
+                    android:text="@string/default_release_date"
                     android:textSize="30sp"/>
 
                 <TextView
@@ -59,7 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="User Rating: 4.1/10"
+                    android:text="@string/default_user_rating"
                     android:textSize="25sp"/>
 
 
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="10dp"
-            android:text="Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the world."
+            android:text="@string/default_description"
             android:textSize="20sp"/>
 
     </LinearLayout>
