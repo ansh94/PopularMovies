@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private static final String MOVIE_DB_BASE_URL =
             "https://api.themoviedb.org/3/movie/";
 
-    private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+    private static final String API_KEY = "";
 
     private String sortBy;
     private List<Movie> moviesList;
