@@ -1,7 +1,10 @@
 package com.example.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         mRecyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
+
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
         mAdapter = new MoviesAdapter(this,this);
@@ -73,7 +77,27 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         final String Url = MOVIE_DB_BASE_URL+orderBy+API_KEY;
         Log.d(LOG_TAG,"Final URL = "+ Url);
 
-        loadMovieData(Url);
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        // If there is a network connection, fetch data
+        if (networkInfo != null && networkInfo.isConnected()) {
+
+            loadMovieData(Url);
+
+        } else {
+            // Otherwise, display error
+            // First, hide loading indicator so error message will be visible
+            mLoadingIndicator.setVisibility(View.GONE);
+
+            showErrorMessage("No Internet Connection");
+        }
+
+
+
 
 //        MovieAsyncTask asyncTask = new MovieAsyncTask();
 //        asyncTask.execute(MOVIE_DB_URL);
@@ -98,14 +122,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private void showMovieDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
+        /* Then, make sure the movie data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    private void showErrorMessage() {
+    private void showErrorMessage(String message) {
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
+        mErrorMessageDisplay.setText(message);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
@@ -149,11 +174,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 showMovieDataView();
                 updateUi(movies);
             } else {
-                showErrorMessage();
+                showErrorMessage("Problem getting movies data");
             }
 
             // Update the information displayed to the user.
-            updateUi(movies);
+//            updateUi(movies);
         }
     }
 
