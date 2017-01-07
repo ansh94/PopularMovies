@@ -44,6 +44,7 @@ public class DetailActivity extends AppCompatActivity {
             // Load image in Image View
             Picasso.with(this)
                     .load(movie.getPoster())
+                    .placeholder(R.mipmap.ic_launcher)
                     .into(detailImage);
 
             //Load release date

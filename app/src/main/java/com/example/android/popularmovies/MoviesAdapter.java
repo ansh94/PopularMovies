@@ -55,6 +55,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         // This is how we use Picasso to load images from the internet.
         Picasso.with(mContext)
                 .load(movie.getPoster())
+                .placeholder(R.mipmap.ic_launcher)
                 .into(holder.mImageView);
     }
 

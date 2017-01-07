@@ -39,9 +39,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private String sortBy;
     private List<Movie> moviesList;
 
+    String finalUrl;
+
     private TextView mErrorMessageDisplay;
 
     private ProgressBar mLoadingIndicator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +74,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String orderBy = sharedPrefs.getString(
+        sortBy = sharedPrefs.getString(
                 getString(R.string.settings_sort_by_key),
                 getString(R.string.settings_sort_by_default)
         );
 
-        final String Url = MOVIE_DB_BASE_URL + orderBy + API_KEY;
-        Log.d(LOG_TAG, "Final URL = " + Url);
+        finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+        Log.d(LOG_TAG, "Final URL = " + finalUrl);
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
 
-            loadMovieData(Url);
+            loadMovieData(finalUrl);
 
         } else {
             // Otherwise, display error
@@ -98,6 +101,22 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             showErrorMessage("No Internet Connection");
         }
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String currentValue = preferences.getString(
+                getString(R.string.settings_sort_by_key),
+                getString(R.string.settings_sort_by_default)
+        );
+        if(!currentValue.equals(sortBy)){
+            sortBy = currentValue;
+            finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+            loadMovieData(finalUrl);
+        }
 
     }
 
