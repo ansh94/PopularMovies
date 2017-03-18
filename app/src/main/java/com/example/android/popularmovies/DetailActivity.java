@@ -1,8 +1,14 @@
 package com.example.android.popularmovies;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,8 +20,17 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler{
+
+    public static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+
+    private RecyclerView tRecyclerView;
+
+    public TrailerAdapter tAdapter;
+    private List<Trailer> trailerList;
 
     private Movie movie;
 
@@ -27,6 +42,13 @@ public class DetailActivity extends AppCompatActivity {
 
     private static final String RATING_BASE = "User Rating: ";
 
+    private static final String MOVIE_DB_BASE_URL =
+            "https://api.themoviedb.org/3/movie/";
+
+    private static final String TRAILER_BASE_URL = "/videos";
+
+    private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +58,16 @@ public class DetailActivity extends AppCompatActivity {
         movie = intent.getParcelableExtra("Movie");
 
 
+
+
+
         if (movie != null) {
             setup();
+
+            String requestUrl = MOVIE_DB_BASE_URL + movie.getId()  + TRAILER_BASE_URL + API_KEY;
+            Log.d(LOG_TAG, "Final trailer URL = " + requestUrl);
+            new TrailerAsyncTask().execute(requestUrl);
+
             // Load Title text
             detailTitle.setText(movie.getTitle());
 
@@ -66,6 +96,20 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setup() {
+
+        tRecyclerView = (RecyclerView) findViewById(R.id.trailer_recycler_view);
+
+
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        tRecyclerView.setLayoutManager(layoutManager);
+
+        tAdapter = new TrailerAdapter(this,this);
+
+        tRecyclerView.setAdapter(tAdapter);
+
+
+
         detailTitle = (TextView) findViewById(R.id.detail_title);
         detailImage = (ImageView) findViewById(R.id.detail_image);
         detailReleaseDate = (TextView) findViewById(R.id.detail_release_date);
@@ -111,4 +155,56 @@ public class DetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onClick(Trailer trailer) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailer.gettKey()));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + trailer.gettKey()));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
+    }
+
+    private class TrailerAsyncTask extends AsyncTask<String, Void, List<Trailer>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected List<Trailer> doInBackground(String... urls) {
+            // Don't perform the request if there are no URLs, or the first URL is null.
+            if (urls.length < 1 || urls[0] == null) {
+                return null;
+            }
+
+            trailerList = MovieUtils.fetchTrailerData(urls[0]);
+            return trailerList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Trailer> trailers) {
+
+//            mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+
+            if (trailers != null) {
+                //showMovieDataView();
+                tAdapter.setTrailerList(trailers);
+            }
+//            else {
+//                showErrorMessage("Problem getting movies data");
+//            }
+
+        }
+    }
+
+
+
+
 }

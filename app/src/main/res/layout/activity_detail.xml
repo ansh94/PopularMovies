@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.android.popularmovies.DetailActivity">
 
     <LinearLayout
@@ -74,6 +75,25 @@
             android:padding="10dp"
             android:text="@string/default_description"
             android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/detail_movie_trailer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:text="Movie Trailers"
+            android:textSize="25sp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/trailer_recycler_view"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/trailer_list_content">
+        </android.support.v7.widget.RecyclerView>
+
 
     </LinearLayout>
 </ScrollView>

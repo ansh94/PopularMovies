@@ -60,6 +60,69 @@ public final class MovieUtils {
         return movies;
     }
 
+    public static List<Trailer> fetchTrailerData(String requestUrl) {
+        Log.i(LOG_TAG, "TEST: fetchTrailerData() called.....");
+
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        // Extract relevant fields from the JSON response and create a list of {@link Earthquake}s
+        List<Trailer> trailers = extractTrailerFeatureFromJson(jsonResponse);
+
+        // Return the list of {@link Earthquake}s
+        return trailers;
+    }
+
+    private static List<Trailer> extractTrailerFeatureFromJson(String jsonResponse) {
+        // If the JSON string is empty or null, then return early.
+        if (TextUtils.isEmpty(jsonResponse)) {
+            return null;
+        }
+
+        // Create an empty ArrayList that we can start adding movies to it
+        List<Trailer> trailers = new ArrayList<>();
+
+        try {
+            JSONObject baseJsonResponse = new JSONObject(jsonResponse);
+            JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
+
+            // For each earthquake in the earthquakeArray, create an {@link Earthquake} object
+            for (int i = 0; i < resultsArray.length(); i++) {
+
+                // Get a single earthquake at position i within the list of earthquakes
+                JSONObject currentTrailer = resultsArray.getJSONObject(i);
+
+
+                // Extract the value for the key called "mag"
+                String trailerKey = currentTrailer.getString("key");
+                String trailerName = currentTrailer.getString("name");
+
+
+
+                //Log.d(LOG_TAG,"Movie id = " + id);
+                // Create a new {@link Earthquake} object with the magnitude, location, time,
+                // and url from the JSON response.
+                Trailer trailer = new Trailer();
+                trailer.settKey(trailerKey);
+                trailer.settName(trailerName);
+
+                // Add the new {@link Earthquake} to the list of earthquakes.
+                trailers.add(trailer);
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Problem parsing the movie JSON results", e);
+        }
+        return trailers;
+    }
+
 
     /**
      * Returns new URL object from the given string URL.
@@ -161,13 +224,17 @@ public final class MovieUtils {
                 String posterPath = currentMovie.getString("poster_path");
                 String overview = currentMovie.getString("overview");
                 String releaseDate = currentMovie.getString("release_date");
+                String id = currentMovie.getString("id");
                 String title = currentMovie.getString("original_title");
                 double userRating = currentMovie.getDouble("vote_average");
 
 
+                //Log.d(LOG_TAG,"Movie id = " + id);
                 // Create a new {@link Earthquake} object with the magnitude, location, time,
                 // and url from the JSON response.
                 Movie movie = new Movie();
+                movie.setId(id);
+
                 movie.setPoster(posterPath);
                 movie.setDescription(overview);
                 movie.setReleaseDate(releaseDate);

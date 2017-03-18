@@ -9,6 +9,8 @@ import android.os.Parcelable;
 
 public class Movie implements Parcelable {
 
+    private String mId;
+
     private String mTitle;
 
     private String mPoster;
@@ -33,6 +35,7 @@ public class Movie implements Parcelable {
     // we originally wrote into the `Parcel`.  This constructor is usually
     // private so that only the `CREATOR` field can access.
     private Movie(Parcel in) {
+        mId = in.readString();
         mTitle = in.readString();
         mPoster = in.readString();
         mDescription = in.readString();
@@ -40,6 +43,13 @@ public class Movie implements Parcelable {
         mUserRating = in.readDouble();
     }
 
+    public String getId() {
+        return mId;
+    }
+
+    public void setId(String id) {
+        mId = id;
+    }
 
     public String getTitle() {
         return mTitle;
@@ -93,6 +103,7 @@ public class Movie implements Parcelable {
     // You may need to make several classes Parcelable to send the data you want.
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mId);
         parcel.writeString(mTitle);
         parcel.writeString(mPoster);
         parcel.writeString(mDescription);
