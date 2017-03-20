@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.utils.MovieUtils;
 
 import java.util.List;
 

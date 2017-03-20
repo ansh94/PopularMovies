@@ -1,7 +1,10 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.utils;
 
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.models.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;

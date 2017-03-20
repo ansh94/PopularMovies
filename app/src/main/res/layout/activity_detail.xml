@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.android.popularmovies.DetailActivity">
+    tools:context="com.example.android.popularmovies.activities.DetailActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -86,6 +86,8 @@
             android:text="Movie Trailers"
             android:textSize="25sp"/>
 
+
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/trailer_recycler_view"
             android:layout_marginTop="10dp"
@@ -93,6 +95,17 @@
             android:layout_height="wrap_content"
             tools:listitem="@layout/trailer_list_content">
         </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/trailer_error_message_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:textSize="15sp"
+            android:visibility="invisible" />
+
+
+
 
 
     </LinearLayout>
