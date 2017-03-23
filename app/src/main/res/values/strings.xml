@@ -33,4 +33,8 @@
     <string name="settings_sort_by_top_rated_label">Top Rated</string>
     <string name="settings_sort_by_top_rated_value" translatable="false">top_rated</string>
 
+    <!-- Label for sort-by favorites option [CHAR LIMIT=20] -->
+    <string name="settings_sort_by_favorites_label">Favorites</string>
+    <string name="settings_sort_by_favorites_value" translatable="false">favorites</string>
+
 </resources>

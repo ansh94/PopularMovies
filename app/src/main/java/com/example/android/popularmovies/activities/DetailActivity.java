@@ -1,8 +1,10 @@
 package com.example.android.popularmovies.activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -14,13 +16,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.adapters.ReviewsAdapter;
 import com.example.android.popularmovies.adapters.TrailerAdapter;
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.models.Review;
 import com.example.android.popularmovies.models.Trailer;
 import com.example.android.popularmovies.utils.MovieUtils;
 import com.squareup.picasso.Picasso;
@@ -41,6 +47,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public TrailerAdapter tAdapter;
     private List<Trailer> trailerList;
 
+    private RecyclerView reviewRecyclerView;
+
+    public ReviewsAdapter reviewAdapter;
+    private List<Review> reviewList;
+
+    private boolean movieFavourite = false;
     private Movie movie;
 
     private TextView detailTitle;
@@ -51,6 +63,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private TextView mErrorMessageDisplay;
 
+    private Button mButtonMarkAsFavorite;
+    private Button mButtonRemoveFromFavorites;
+
 
 
     private static final String RATING_BASE = "User Rating: ";
@@ -59,6 +74,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             "https://api.themoviedb.org/3/movie/";
 
     private static final String TRAILER_BASE_URL = "/videos";
+    private static final String REVIEW_BASE_URL = "/reviews";
 
     private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
 
@@ -73,9 +89,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         if (movie != null) {
             setup();
+            updateFavoriteButtons();
 
-            String requestUrl = MOVIE_DB_BASE_URL + movie.getId() + TRAILER_BASE_URL + API_KEY;
-            Log.d(LOG_TAG, "Final trailer URL = " + requestUrl);
+            String trailerUrl = MOVIE_DB_BASE_URL + movie.getId() + TRAILER_BASE_URL + API_KEY;
+            Log.d(LOG_TAG, "Final trailer URL = " + trailerUrl);
+
+            String reviewUrl = MOVIE_DB_BASE_URL + movie.getId() + REVIEW_BASE_URL + API_KEY;
+            Log.d(LOG_TAG, "Final review URL = " + reviewUrl);
 
 
             // Load Title text
@@ -109,7 +129,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             // If there is a network connection, fetch data
             if (networkInfo != null && networkInfo.isConnected()) {
 
-                loadTrailerData(requestUrl);
+                loadTrailerData(trailerUrl);
+                new ReviewAsyncTask().execute(reviewUrl);
 
             } else {
 
@@ -124,6 +145,72 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
 
     }
+
+    public void updateFavoriteButtons() {
+        // Needed to avoid "skip frames".
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return isFavorite();
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isFavorite) {
+                if (isFavorite) {
+                    mButtonRemoveFromFavorites.setVisibility(View.VISIBLE);
+                    mButtonMarkAsFavorite.setVisibility(View.GONE);
+
+                } else {
+                    mButtonMarkAsFavorite.setVisibility(View.VISIBLE);
+                    mButtonRemoveFromFavorites.setVisibility(View.GONE);
+
+                }
+
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        mButtonMarkAsFavorite.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        markAsFavorite();
+                    }
+                });
+
+
+        mButtonRemoveFromFavorites.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeFromFavorites();
+                    }
+                });
+
+
+
+
+
+    }
+
+
+    private boolean isFavorite() {
+        Cursor movieCursor = getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + movie.getId(),
+                null,
+                null);
+
+        if (movieCursor != null && movieCursor.moveToFirst()) {
+            movieCursor.close();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
     private void loadTrailerData(String requestUrl) {
         showTrailerDataView();
@@ -148,9 +235,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private void setup() {
 
+        mButtonMarkAsFavorite = (Button) findViewById(R.id.button_mark_as_favorite);
+        mButtonRemoveFromFavorites = (Button) findViewById(R.id.button_remove_from_favorites);
+
+
+
+
+
+
         /* This TextView is used to display errors and will be hidden if there are no errors */
         mErrorMessageDisplay = (TextView) findViewById(R.id.trailer_error_message_display);
-
 
 
         tRecyclerView = (RecyclerView) findViewById(R.id.trailer_recycler_view);
@@ -163,6 +257,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         tAdapter = new TrailerAdapter(this, this);
 
         tRecyclerView.setAdapter(tAdapter);
+
+
+        reviewRecyclerView = (RecyclerView) findViewById(R.id.review_list);
+
+
+        LinearLayoutManager reviewLayoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        reviewRecyclerView.setLayoutManager(reviewLayoutManager);
+
+        reviewAdapter = new ReviewsAdapter(this);
+
+        reviewRecyclerView.setAdapter(reviewAdapter);
 
 
         detailTitle = (TextView) findViewById(R.id.detail_title);
@@ -211,6 +317,77 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         return super.onOptionsItemSelected(item);
     }
 
+    public void markAsFavorite() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (!isFavorite()) {
+                    ContentValues movieValues = new ContentValues();
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                            movie.getId());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                            movie.getTitle());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
+                            movie.getPoster());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION,
+                            movie.getDescription());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                            movie.getUserRating());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+                            movie.getReleaseDate());
+
+                    // Insert the content values via a ContentResolver
+                   Uri uri =  getContentResolver().insert(
+                            MovieContract.MovieEntry.CONTENT_URI,
+                            movieValues
+                    );
+
+                    // Display the URI that's returned with a Toast
+                    if(uri != null) {
+                        Log.d(LOG_TAG,"Uri = " + uri.toString());
+                    }
+
+
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                updateFavoriteButtons();
+                Toast.makeText(getBaseContext(), "Movie added to favourites!", Toast.LENGTH_LONG).show();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+
+    public void removeFromFavorites() {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (isFavorite()) {
+                    int moviesDeleted = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + movie.getId(), null);
+
+                    Log.d(LOG_TAG,"No of movies deleted = " + moviesDeleted);
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                updateFavoriteButtons();
+                Toast.makeText(getBaseContext(), "Movie removed from favourites!", Toast.LENGTH_LONG).show();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+
     @Override
     public void onClick(Trailer trailer) {
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailer.gettKey()));
@@ -246,14 +423,47 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         protected void onPostExecute(List<Trailer> trailers) {
 
 
-
             if (trailers != null) {
                 showTrailerDataView();
                 tAdapter.setTrailerList(trailers);
-            }
-            else {
+            } else {
                 showErrorMessage("Problem getting movies data");
             }
+
+        }
+    }
+
+
+    private class ReviewAsyncTask extends AsyncTask<String, Void, List<Review>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected List<Review> doInBackground(String... urls) {
+            // Don't perform the request if there are no URLs, or the first URL is null.
+            if (urls.length < 1 || urls[0] == null) {
+                return null;
+            }
+
+            reviewList = MovieUtils.fetchReviewData(urls[0]);
+            return reviewList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Review> reviews) {
+
+
+            if (reviews != null) {
+//                showTrailerDataView();
+                reviewAdapter.setReviewList(reviews);
+            }
+//            else {
+//                showErrorMessage("Problem getting movies data");
+//            }
 
         }
     }

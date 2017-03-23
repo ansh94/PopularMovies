@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -77,6 +77,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         // The adapter needs to know that the data has changed. If we don't call this, app will crash.
         notifyDataSetChanged();
     }
+
+
 
 
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

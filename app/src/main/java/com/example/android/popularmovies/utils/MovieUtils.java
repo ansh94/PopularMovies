@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.android.popularmovies.models.Movie;
+import com.example.android.popularmovies.models.Review;
 import com.example.android.popularmovies.models.Trailer;
 
 import org.json.JSONArray;
@@ -84,6 +85,27 @@ public final class MovieUtils {
         return trailers;
     }
 
+    public static List<Review> fetchReviewData(String requestUrl) {
+        Log.i(LOG_TAG, "TEST: fetchReviewData() called.....");
+
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        // Extract relevant fields from the JSON response and create a list of {@link Earthquake}s
+        List<Review> reviews = extractReviewFeatureFromJson(jsonResponse);
+
+        // Return the list of {@link Earthquake}s
+        return reviews;
+    }
+
     private static List<Trailer> extractTrailerFeatureFromJson(String jsonResponse) {
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(jsonResponse)) {
@@ -125,6 +147,51 @@ public final class MovieUtils {
         }
         return trailers;
     }
+
+    private static List<Review> extractReviewFeatureFromJson(String jsonResponse) {
+        // If the JSON string is empty or null, then return early.
+        if (TextUtils.isEmpty(jsonResponse)) {
+            return null;
+        }
+
+        // Create an empty ArrayList that we can start adding movies to it
+        List<Review> reviews = new ArrayList<>();
+
+        try {
+            JSONObject baseJsonResponse = new JSONObject(jsonResponse);
+            JSONArray resultsArray = baseJsonResponse.getJSONArray("results");
+
+            // For each earthquake in the earthquakeArray, create an {@link Earthquake} object
+            for (int i = 0; i < resultsArray.length(); i++) {
+
+                // Get a single earthquake at position i within the list of earthquakes
+                JSONObject currentReview = resultsArray.getJSONObject(i);
+
+
+                // Extract the value for the key called "mag"
+                String reviewAuthor = currentReview.getString("author");
+                String reviewContent = currentReview.getString("content");
+                String reviewUrl = currentReview.getString("url");
+
+
+
+                //Log.d(LOG_TAG,"Movie id = " + id);
+                // Create a new {@link Earthquake} object with the magnitude, location, time,
+                // and url from the JSON response.
+                Review review = new Review();
+                review.setAuthor(reviewAuthor);
+                review.setContent(reviewContent);
+                review.setUrl(reviewUrl);
+
+                // Add the new {@link Earthquake} to the list of earthquakes.
+                reviews.add(review);
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Problem parsing the movie JSON results", e);
+        }
+        return reviews;
+    }
+
 
 
     /**

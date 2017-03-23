@@ -29,4 +29,6 @@ dependencies {
 
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.ms-square:expandableTextView:0.1.4'
+    compile 'com.github.ivbaranov:materialfavoritebutton:0.1.4'
 }
