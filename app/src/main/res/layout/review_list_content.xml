@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="10dp"
+    android:layout_marginBottom="10dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical">
 
@@ -27,14 +27,14 @@
 
     <TextView
         android:id="@+id/review_expand_more"
-        android:text="Expand more"
+        android:text="Show more"
         android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/review_expand_less"
-        android:text="Expand less"
+        android:text="Show less"
         android:layout_marginLeft="10dp"
         android:visibility="gone"
         android:layout_width="wrap_content"

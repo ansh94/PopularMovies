@@ -38,9 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
+public class FavoriteDetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
-    public static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    public static final String LOG_TAG = FavoriteDetailActivity.class.getSimpleName();
 
 
     private RecyclerView tRecyclerView;
@@ -53,10 +54,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public ReviewsAdapter reviewAdapter;
     private List<Review> reviewList;
 
-    private View parentView;
-
     private Movie movie;
+    private Movie favoriteMovie;
 
+    private View parentView;
 
     private TextView detailTitle;
     private ImageView detailImage;
@@ -82,6 +83,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +92,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         Intent intent = getIntent();
 
         movie = intent.getParcelableExtra("Movie");
-
 
         if (movie != null) {
             setup();
@@ -106,9 +107,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             // Load Title text
             detailTitle.setText(movie.getTitle());
 
+            Log.d(LOG_TAG, "Movie image url = " + movie.getFavoritePoster());
             // Load image in Image View
             Picasso.with(this)
-                    .load(movie.getPoster())
+                    .load(movie.getFavoritePoster())
                     .placeholder(R.mipmap.ic_launcher)
                     .into(detailImage);
 
@@ -129,7 +131,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             if (MovieUtils.checkConnection(this)) {
 
                 loadTrailerData(trailerUrl);
-
                 loadReviewData(reviewUrl);
 
             } else {
@@ -142,9 +143,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         } else {
             Toast.makeText(this, "ERROR No data was read", Toast.LENGTH_LONG).show();
         }
-
-
     }
+
 
     public void updateFavoriteButtons() {
         // Needed to avoid "skip frames".
@@ -161,7 +161,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 //                    mButtonRemoveFromFavorites.setVisibility(View.VISIBLE);
 //                    mButtonMarkAsFavorite.setVisibility(View.GONE);
                     likeButton.setLiked(true);
-
 
                 } else {
 //                    mButtonMarkAsFavorite.setVisibility(View.VISIBLE);
@@ -228,6 +227,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         new TrailerAsyncTask().execute(requestUrl);
     }
 
+    private void loadReviewData(String requestUrl) {
+        showReviewDataView();
+
+        new ReviewAsyncTask().execute(requestUrl);
+    }
+
+
+
     private void showTrailerDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
@@ -235,11 +242,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         tRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    private void loadReviewData(String requestUrl) {
-        showReviewDataView();
-
-        new ReviewAsyncTask().execute(requestUrl);
-    }
 
     private void showReviewDataView() {
         /* First, make sure the error is invisible */
@@ -259,15 +261,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         rErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-
-
     private void setup() {
 
 //        mButtonMarkAsFavorite = (Button) findViewById(R.id.button_mark_as_favorite);
 //        mButtonRemoveFromFavorites = (Button) findViewById(R.id.button_remove_from_favorites);
 
         likeButton = (LikeButton) findViewById(R.id.star_button);
-
 
         parentView = findViewById(R.id.root_view);
 
@@ -291,13 +290,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         reviewRecyclerView = (RecyclerView) findViewById(R.id.review_list);
 
+        //for smooth scrolling
+        reviewRecyclerView.setNestedScrollingEnabled(false);
+
 
         LinearLayoutManager reviewLayoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         reviewRecyclerView.setLayoutManager(reviewLayoutManager);
-
-        //for smooth scrolling
-        reviewRecyclerView.setNestedScrollingEnabled(false);
 
         reviewAdapter = new ReviewsAdapter(this);
 
@@ -339,6 +338,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         return outputDate;
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -383,7 +383,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         } else {
             Toast.makeText(this, "No Internet Connection: Unable to get trailer url", Toast.LENGTH_SHORT).show();
         }
+
+
     }
+
 
     public void markAsFavorite() {
 
@@ -496,7 +499,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 showTrailerDataView();
                 tAdapter.setTrailerList(trailers);
             } else {
-                showErrorMessage("Problem getting trailer data");
+                showErrorMessage("Problem getting movies data");
             }
 
         }
@@ -524,6 +527,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         @Override
         protected void onPostExecute(List<Review> reviews) {
+
 
             if(reviews.size()==0){
                 rErrorMessageDisplay.setText("No reviews are available for the given movie");

@@ -47,6 +47,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         final TextView expandMore = holder.expandMore;
         final TextView expandLess = holder.expandLess;
 
+
         rAuthor.setText(review.getAuthor());
         rContent.setText(review.getContent());
 

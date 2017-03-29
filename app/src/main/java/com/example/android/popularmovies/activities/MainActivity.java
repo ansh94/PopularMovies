@@ -1,11 +1,8 @@
 package com.example.android.popularmovies.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -29,9 +26,10 @@ import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.models.Movie;
 import com.example.android.popularmovies.utils.MovieUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler,
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler, CustomCursorAdapter.CustomCursorAdapterOnClickHandler,
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private RecyclerView mRecyclerView;
@@ -45,8 +43,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private static final int MOVIE_LOADER_ID = 0;
 
+
     // Member variables for the adapter and RecyclerView
     private CustomCursorAdapter cAdapter;
+
+    private static final String EXTRA_MOVIES = "EXTRA_MOVIES";
+    private static final String EXTRA_SORT_BY = "EXTRA_SORT_BY";
+
 
     private static final String MOVIE_DB_BASE_URL =
             "https://api.themoviedb.org/3/movie/";
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private String sortBy;
     private List<Movie> moviesList;
+
 
     String finalUrl;
 
@@ -67,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         /* This TextView is used to display errors and will be hidden if there are no errors */
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
@@ -82,14 +88,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         mRecyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 
-        cAdapter = new CustomCursorAdapter(this);
+        cAdapter = new CustomCursorAdapter(this, this);
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         mAdapter = new MoviesAdapter(this, this);
-
-
-
 
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -99,28 +102,90 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 getString(R.string.settings_sort_by_default)
         );
 
-        if(sortBy.equals("favorites")){
+        if (sortBy.equals("favorites")) {
             mRecyclerView.setAdapter(cAdapter);
-        }
-        else{
+        } else {
             mRecyclerView.setAdapter(mAdapter);
 
         }
 
-        if(!sortBy.equals("favorites")){
-            finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
-            Log.d(LOG_TAG, "Final URL = " + finalUrl);
+        Log.d(LOG_TAG, "In onCreate method!");
+
+        if (savedInstanceState != null) {
+            sortBy = savedInstanceState.getString(EXTRA_SORT_BY);
+            Log.d(LOG_TAG, "onSaveInstanceState is not null and sort by = " + sortBy);
+            if (sortBy.equals("favorites")) {
+                mRecyclerView.setAdapter(cAdapter);
+            } else {
+                mRecyclerView.setAdapter(mAdapter);
+
+            }
+
+            if (savedInstanceState.containsKey(EXTRA_MOVIES)) {
+                ArrayList<Movie> movies = savedInstanceState.getParcelableArrayList(EXTRA_MOVIES);
+                mAdapter.setMovieList(movies);
+            }
+        } else {
+
+            if (!sortBy.equals("favorites")) {
+                finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+                Log.d(LOG_TAG, "Final URL = " + finalUrl);
 
 
-            // Get a reference to the ConnectivityManager to check state of network connectivity
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                // If there is a network connection, fetch data
+                if (MovieUtils.checkConnection(this)) {
 
-            // Get details on the currently active default data network
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                    loadMovieData(finalUrl);
+
+                } else {
+                    // Otherwise, display error
+                    // First, hide loading indicator so error message will be visible
+                    mLoadingIndicator.setVisibility(View.GONE);
+
+                    showErrorMessage("No Internet Connection");
+                }
+            }
+
+
+        }
+
+
+
+
+        /*
+         Ensure a loader is initialized and active. If the loader doesn't already exist, one is
+         created, otherwise the last created loader is re-used.
+         */
+
+        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String currentValue = preferences.getString(
+                getString(R.string.settings_sort_by_key),
+                getString(R.string.settings_sort_by_default)
+        );
+        Log.d(LOG_TAG, "In onResume() Current value = " + currentValue);
+        Log.d(LOG_TAG, "In onResume() sortBy value = " + sortBy);
+
+        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+
+
+        if (!currentValue.equals("favorites")) {
 
             // If there is a network connection, fetch data
-            if (networkInfo != null && networkInfo.isConnected()) {
+            if (MovieUtils.checkConnection(this)) {
 
+                mRecyclerView.setAdapter(mAdapter);
+                finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
                 loadMovieData(finalUrl);
 
             } else {
@@ -132,45 +197,42 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             }
         }
 
-        /*
-         Ensure a loader is initialized and active. If the loader doesn't already exist, one is
-         created, otherwise the last created loader is re-used.
-         */
-        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
-
-
-
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String currentValue = preferences.getString(
-                getString(R.string.settings_sort_by_key),
-                getString(R.string.settings_sort_by_default)
-        );
-
-
-        if(!currentValue.equals(sortBy)){
+        if (!currentValue.equals(sortBy)) {
             sortBy = currentValue;
-            if(!sortBy.equals("favorites")){
-                finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
-                loadMovieData(finalUrl);
-            }
-            else {
-                // re-queries for all tasks
+            if (sortBy.equals("favorites")) {
+
+                showMovieDataView();
+                mRecyclerView.setAdapter(cAdapter);
+
                 getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+
+
+            } else if (!sortBy.equals("favorites")) {
+
+
+                // If there is a network connection, fetch data
+                if (MovieUtils.checkConnection(this)) {
+
+                    mRecyclerView.setAdapter(mAdapter);
+                    finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+                    loadMovieData(finalUrl);
+
+                } else {
+                    // Otherwise, display error
+                    // First, hide loading indicator so error message will be visible
+                    mLoadingIndicator.setVisibility(View.GONE);
+
+                    showErrorMessage("No Internet Connection");
+                }
+
+
             }
 
         }
 
+
     }
+
 
     private void loadMovieData(String requestUrl) {
         showMovieDataView();
@@ -204,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     /**
      * Instantiates and returns a new AsyncTaskLoader with the given ID.
      * This loader will return task data as a Cursor or null if an error occurs.
-     *
+     * <p>
      * Implements the required callbacks to take care of loading data at all stages of loading.
      */
     @Override
@@ -261,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      * Called when a previously created loader has finished its load.
      *
      * @param loader The Loader that has finished.
-     * @param data The data generated by the Loader.
+     * @param data   The data generated by the Loader.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -279,6 +341,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         cAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onFavoriteMovieClick(Movie movie) {
+        Intent intent = new Intent(MainActivity.this, FavoriteDetailActivity.class);
+        intent.putExtra("Movie", movie);
+        startActivity(intent);
+
     }
 
     private class MovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
@@ -320,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mAdapter.setMovieList(movies);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -335,5 +406,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d(LOG_TAG, "inside onSaveInstanceState");
+
+        ArrayList<Movie> movies = mAdapter.getMovies();
+        if (movies != null && !movies.isEmpty()) {
+            outState.putParcelableArrayList(EXTRA_MOVIES, movies);
+        }
+        outState.putString(EXTRA_SORT_BY, sortBy);
+
+
     }
 }

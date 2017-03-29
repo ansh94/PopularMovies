@@ -78,6 +78,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         notifyDataSetChanged();
     }
 
+    public ArrayList<Movie> getMovies(){
+        return (ArrayList<Movie>) mMoviesList;
+    }
+
 
 
 

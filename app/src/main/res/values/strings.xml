@@ -17,6 +17,7 @@
 
     <!-- Settings Menu Item [CHAR LIMIT=NONE] -->
     <string name="settings_menu_item">Settings</string>
+    <string name="share_trailer">Share Trailer</string>
     <!-- Settings Activity Title [CHAR LIMIT=NONE] -->
     <string name="settings_title">Movie Settings</string>
 

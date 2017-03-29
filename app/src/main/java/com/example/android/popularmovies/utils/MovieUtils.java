@@ -1,5 +1,8 @@
 package com.example.android.popularmovies.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -28,6 +31,7 @@ import java.util.List;
 
 public final class MovieUtils {
 
+    public boolean emptyReview = false;
 
     /**
      * Tag for the log messages
@@ -101,10 +105,14 @@ public final class MovieUtils {
 
         // Extract relevant fields from the JSON response and create a list of {@link Earthquake}s
         List<Review> reviews = extractReviewFeatureFromJson(jsonResponse);
+        Log.d(LOG_TAG,"Reviews size: "+reviews.size());
+
 
         // Return the list of {@link Earthquake}s
         return reviews;
     }
+
+
 
     private static List<Trailer> extractTrailerFeatureFromJson(String jsonResponse) {
         // If the JSON string is empty or null, then return early.
@@ -318,6 +326,21 @@ public final class MovieUtils {
             Log.e(LOG_TAG, "Problem parsing the movie JSON results", e);
         }
         return movies;
+    }
+
+    public static boolean checkConnection(Context context){
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }

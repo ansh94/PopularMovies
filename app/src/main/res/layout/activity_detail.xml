@@ -7,10 +7,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.android.popularmovies.activities.DetailActivity">
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
+        android:id="@+id/root_view"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+
 
         <TextView
             android:id="@+id/detail_title"
@@ -46,11 +51,14 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
+
+
+
                 <TextView
                     android:id="@+id/detail_release_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="25dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="30dp"
                     android:text="@string/default_release_date"
                     android:textSize="30sp"/>
@@ -60,15 +68,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
+                    android:layout_marginBottom="20dp"
                     android:text="@string/default_user_rating"
                     android:textSize="25sp"/>
 
-                <include layout="@layout/favourite_buttons" />
+                <com.like.LikeButton
+                    app:icon_type="heart"
+                    app:icon_size="30dp"
+                    android:id="@+id/star_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <!--<include layout="@layout/favourite_buttons" />-->
 
 
 
             </LinearLayout>
         </LinearLayout>
+
+
 
         <TextView
             android:id="@+id/detail_overview"
@@ -78,6 +96,7 @@
             android:padding="10dp"
             android:text="@string/default_description"
             android:textSize="20sp"/>
+
 
 
 
@@ -110,6 +129,8 @@
             android:textSize="15sp"
             android:visibility="invisible" />
 
+
+
         <TextView
             android:id="@+id/detail_movie_review"
             android:layout_width="wrap_content"
@@ -126,6 +147,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/review_list_content" />
+
+        <TextView
+            android:id="@+id/review_error_message_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"
+            android:visibility="invisible" />
 
 
 

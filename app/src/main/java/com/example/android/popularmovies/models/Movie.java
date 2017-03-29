@@ -75,6 +75,8 @@ public class Movie implements Parcelable {
         mPoster = poster;
     }
 
+
+
     public void setDescription(String description) {
         mDescription = description;
     }
@@ -91,6 +93,11 @@ public class Movie implements Parcelable {
     public String getPoster() {
         return IMAGE_BASE_URL + IMAGE_SIZE + mPoster;
     }
+
+    public String getFavoritePoster() {
+        return  mPoster;
+    }
+
 
     @Override
     public int describeContents() {

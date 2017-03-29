@@ -10,7 +10,10 @@ import android.widget.ImageView;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by ANSHDEEP on 23-03-2017.
@@ -22,6 +25,16 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
     // Class variables for the Cursor that holds task data and the Context
     private Cursor mCursor;
     private Context mContext;
+    private ArrayList<Movie> fMovies;
+
+    private final CustomCursorAdapterOnClickHandler mClickHandler;
+
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface CustomCursorAdapterOnClickHandler {
+        void onFavoriteMovieClick(Movie movie);
+    }
 
 
     /**
@@ -29,8 +42,10 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
      *
      * @param mContext the current Context
      */
-    public CustomCursorAdapter(Context mContext) {
+    public CustomCursorAdapter(Context mContext, CustomCursorAdapterOnClickHandler clickHandler) {
         this.mContext = mContext;
+        mClickHandler = clickHandler;
+        fMovies = new ArrayList<>();
     }
 
 
@@ -53,29 +68,44 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
     /**
      * Called by the RecyclerView to display data at a specified position in the Cursor.
      *
-     * @param holder The ViewHolder to bind Cursor data to
+     * @param holder   The ViewHolder to bind Cursor data to
      * @param position The position of the data in the Cursor
      */
     @Override
     public void onBindViewHolder(FavoriteMovieViewHolder holder, int position) {
 
         // Indices for the _id, description, and priority columns
-        int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
-        int movieIdIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-        int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
+//        int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
+//        int movieIdIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+//        int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
         int moviePosterIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH);
-        int movieDescriptionIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION);
-        int movieRatingIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
-        int movieDateIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
+//        int movieDescriptionIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION);
+//        int movieRatingIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
+//        int movieDateIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
 
 
         mCursor.moveToPosition(position); // get to the right location in the cursor
 
 
-
-        // Determine the values of the wanted data
-
+//        // Determine the values of the wanted data
+//        String movieId = mCursor.getString(movieIdIndex);
+//        String movieTitle = mCursor.getString(movieTitleIndex);
         String posterPath = mCursor.getString(moviePosterIndex);
+////        Log.d("CustomCursorAdapter","Poster Path = "+posterPath);
+//        String movieDescription = mCursor.getString(movieDescriptionIndex);
+//        String movieRating = mCursor.getString(movieRatingIndex);
+//        String movieDate = mCursor.getString(movieDateIndex);
+//
+//        Movie movie = new Movie();
+//        movie.setId(movieId);
+//        movie.setTitle(movieTitle);
+//        movie.setPoster(posterPath);
+//        movie.setDescription(movieDescription);
+//        movie.setUserRating(Double.parseDouble(movieRating));
+//        movie.setReleaseDate(movieDate);
+//        fMovies.add(movie);
+
+
         // This is how we use Picasso to load images from the internet.
         Picasso.with(mContext)
                 .load(posterPath)
@@ -84,9 +114,6 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
 
 
     }
-
-
-
 
 
     /**
@@ -98,6 +125,11 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
             return 0;
         }
         return mCursor.getCount();
+
+    }
+
+    public ArrayList<Movie> getFavoriteMovies() {
+        return fMovies;
     }
 
 
@@ -112,17 +144,49 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
         }
         Cursor temp = mCursor;
         this.mCursor = c; // new cursor value assigned
+        this.fMovies.clear();
 
         //check if this is a valid cursor, then update the cursor
-        if (c != null) {
+        if (c != null && c.moveToFirst()) {
+            int movieIdIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+            int movieTitleIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
+            int moviePosterIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH);
+            int movieDescriptionIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION);
+            int movieRatingIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
+            int movieDateIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
+
+            do{
+
+                // Determine the values of the wanted data
+                String movieId = c.getString(movieIdIndex);
+                String movieTitle = c.getString(movieTitleIndex);
+                String posterPath = c.getString(moviePosterIndex);
+//        Log.d("CustomCursorAdapter","Poster Path = "+posterPath);
+                String movieDescription = c.getString(movieDescriptionIndex);
+                String movieRating = c.getString(movieRatingIndex);
+                String movieDate = c.getString(movieDateIndex);
+
+                Movie movie = new Movie();
+                movie.setId(movieId);
+                movie.setTitle(movieTitle);
+                movie.setPoster(posterPath);
+                movie.setDescription(movieDescription);
+                movie.setUserRating(Double.parseDouble(movieRating));
+                movie.setReleaseDate(movieDate);
+                fMovies.add(movie);
+            }
+            while (c.moveToNext());
+
             this.notifyDataSetChanged();
+
+
         }
         return temp;
     }
 
 
     // Inner class for creating ViewHolders
-    class FavoriteMovieViewHolder extends RecyclerView.ViewHolder {
+    class FavoriteMovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mImageView;
 
@@ -134,6 +198,21 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
         public FavoriteMovieViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.movie_image_view);
+            itemView.setOnClickListener(this);
+        }
+
+        /**
+         * This gets called by the child views during a click.
+         *
+         * @param view The View that was clicked
+         */
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+
+            Movie movie = fMovies.get(clickedPosition);
+//            Toast.makeText(mContext,"Movie name: "+ movie.getTitle(),Toast.LENGTH_SHORT).show();
+            mClickHandler.onFavoriteMovieClick(movie);
         }
     }
 }

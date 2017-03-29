@@ -3,7 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -25,6 +25,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.popularmovies.activities.MainActivity"/>
         </activity>
+
+        <activity android:name=".activities.FavoriteDetailActivity"
+                  android:label="@string/detail_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.popularmovies.activities.MainActivity"/>
+        </activity>
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/settings_title">
@@ -37,9 +44,11 @@
         <!-- Set name, authorities, and exported attributes -->
         <!-- exported = false limits access to this ContentProvider to only this app -->
         <provider
-            android:name="com.example.android.popularmovies.data.MovieContentProvider"
+            android:name=".data.MovieContentProvider"
             android:authorities="com.example.android.popularmovies"
             android:exported="false"/>
+
+
     </application>
 
 </manifest>
