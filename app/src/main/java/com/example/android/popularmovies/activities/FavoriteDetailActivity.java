@@ -361,6 +361,9 @@ public class FavoriteDetailActivity extends AppCompatActivity implements Trailer
         return super.onOptionsItemSelected(item);
     }
 
+
+
+
     public void shareTrailerUrl() {
         String mimeType = "text/plain";
         String title = "Share Movie Trailer";
@@ -458,6 +461,7 @@ public class FavoriteDetailActivity extends AppCompatActivity implements Trailer
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
 
 
     @Override

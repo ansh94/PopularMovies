@@ -3,6 +3,7 @@ package com.example.android.popularmovies.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,45 +75,37 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
     @Override
     public void onBindViewHolder(FavoriteMovieViewHolder holder, int position) {
 
-        // Indices for the _id, description, and priority columns
+        if(mCursor!=null) {
+
+
+            // Indices for the _id, description, and priority columns
 //        int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
 //        int movieIdIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
 //        int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
-        int moviePosterIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH);
+            int moviePosterIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH);
 //        int movieDescriptionIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION);
 //        int movieRatingIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
 //        int movieDateIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
 
 
-        mCursor.moveToPosition(position); // get to the right location in the cursor
+            mCursor.moveToPosition(position); // get to the right location in the cursor
 
 
-//        // Determine the values of the wanted data
-//        String movieId = mCursor.getString(movieIdIndex);
-//        String movieTitle = mCursor.getString(movieTitleIndex);
-        String posterPath = mCursor.getString(moviePosterIndex);
-////        Log.d("CustomCursorAdapter","Poster Path = "+posterPath);
-//        String movieDescription = mCursor.getString(movieDescriptionIndex);
-//        String movieRating = mCursor.getString(movieRatingIndex);
-//        String movieDate = mCursor.getString(movieDateIndex);
-//
-//        Movie movie = new Movie();
-//        movie.setId(movieId);
-//        movie.setTitle(movieTitle);
-//        movie.setPoster(posterPath);
-//        movie.setDescription(movieDescription);
-//        movie.setUserRating(Double.parseDouble(movieRating));
-//        movie.setReleaseDate(movieDate);
-//        fMovies.add(movie);
+            String posterPath = mCursor.getString(moviePosterIndex);
 
 
-        // This is how we use Picasso to load images from the internet.
-        Picasso.with(mContext)
-                .load(posterPath)
-                .placeholder(R.mipmap.ic_launcher)
-                .into(holder.mImageView);
+            // This is how we use Picasso to load images from the internet.
+            Picasso.with(mContext)
+                    .load(posterPath)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(holder.mImageView);
 
+        }
+    }
 
+    public void clearMovies(){
+        this.fMovies.clear();
+        this.notifyDataSetChanged();
     }
 
 
@@ -128,8 +121,8 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
 
     }
 
-    public ArrayList<Movie> getFavoriteMovies() {
-        return fMovies;
+    public int getFavoriteMoviesSize() {
+        return fMovies.size();
     }
 
 
@@ -142,6 +135,8 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
         if (mCursor == c) {
             return null; // bc nothing has changed
         }
+
+
         Cursor temp = mCursor;
         this.mCursor = c; // new cursor value assigned
         this.fMovies.clear();
@@ -210,6 +205,7 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
         public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
 
+            Log.d("CustomCursorAdapter: ","Movies list size in onclick "+ fMovies.size());
             Movie movie = fMovies.get(clickedPosition);
 //            Toast.makeText(mContext,"Movie name: "+ movie.getTitle(),Toast.LENGTH_SHORT).show();
             mClickHandler.onFavoriteMovieClick(movie);

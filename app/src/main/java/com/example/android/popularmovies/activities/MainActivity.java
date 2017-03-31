@@ -173,10 +173,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 getString(R.string.settings_sort_by_key),
                 getString(R.string.settings_sort_by_default)
         );
+        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
         Log.d(LOG_TAG, "In onResume() Current value = " + currentValue);
         Log.d(LOG_TAG, "In onResume() sortBy value = " + sortBy);
 
-        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+
 
 
         if (!currentValue.equals("favorites")) {
@@ -196,15 +197,23 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 showErrorMessage("No Internet Connection");
             }
         }
+        else if(currentValue.equals("favorites")){
+            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+            Log.d(LOG_TAG,"movies size = " + cAdapter.getFavoriteMoviesSize());
+            Log.d(LOG_TAG,"cursor item size = " + cAdapter.getItemCount());
+            mRecyclerView.setAdapter(cAdapter);
+        }
 
         if (!currentValue.equals(sortBy)) {
             sortBy = currentValue;
             if (sortBy.equals("favorites")) {
 
                 showMovieDataView();
-                mRecyclerView.setAdapter(cAdapter);
+
+
 
                 getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+                mRecyclerView.setAdapter(cAdapter);
 
 
             } else if (!sortBy.equals("favorites")) {
@@ -255,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mErrorMessageDisplay.setText(message);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
+
 
     @Override
     public void onClick(Movie movie) {
@@ -327,8 +337,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+//        ArrayList<Movie> favoriteMovies = cAdapter.getFavoriteMovies();
+//
+//
+//        if(favoriteMovies.isEmpty()){
+//            mErrorMessageDisplay.setText("");
+//        }
+
         // Update the data that the adapter uses to create ViewHolders
         cAdapter.swapCursor(data);
+        Log.d(LOG_TAG,"Cursor count = "+ cAdapter.getItemCount());
+//        Log.d(LOG_TAG,"Movies arraylist size = " + cAdapter.getFavoriteMovies().size());
+
     }
 
     /**
