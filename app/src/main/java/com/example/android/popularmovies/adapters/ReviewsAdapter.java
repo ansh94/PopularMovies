@@ -86,6 +86,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
     public void setReviewList(List<Review> reviewList) {
         this.mReviewList.clear();
         this.mReviewList.addAll(reviewList);
+
         // The adapter needs to know that the data has changed. If we don't call this, app will crash.
         notifyDataSetChanged();
     }

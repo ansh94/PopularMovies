@@ -28,9 +28,6 @@ public class MovieContract {
     // This is the path for the "movies" directory
     public static final String PATH_MOVIES = "movies";
 
-    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-
-    private static final String IMAGE_SIZE = "w185/";
 
     /* MovieEntry is an inner class that defines the contents of the task table */
     public static final class MovieEntry implements BaseColumns {
@@ -51,7 +48,6 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_DESCRIPTION = "description";
         public static final String COLUMN_MOVIE_RATING = "rating";
         public static final String COLUMN_MOVIE_RELEASE_DATE = "date";
-
 
 
     }

@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by ANSHDEEP on 21-03-2017.
  */
 
-public class Review implements Parcelable{
+public class Review implements Parcelable {
 
     private String rAuthor;
 
@@ -54,10 +54,6 @@ public class Review implements Parcelable{
     public void setUrl(String rUrl) {
         this.rUrl = rUrl;
     }
-
-//    public String getTrailerUrl() {
-//        return "http://www.youtube.com/watch?v=" + tKey;
-//    }
 
     @Override
     public int describeContents() {

@@ -28,9 +28,10 @@ public class MovieContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     // Define a static buildUriMatcher method that associates URI's with their int match
+
     /**
-     Initialize a new matcher object without any matches,
-     then use .addURI(String authority, String path, int match) to add matches
+     * Initialize a new matcher object without any matches,
+     * then use .addURI(String authority, String path, int match) to add matches
      */
     public static UriMatcher buildUriMatcher() {
 
@@ -59,7 +60,6 @@ public class MovieContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         // Complete onCreate() and initialize a TaskDbhelper on startup
-        // [Hint] Declare the DbHelper as a global variable
 
         Context context = getContext();
         mMovieDBHelper = new MovieDBHelper(context);
@@ -82,7 +82,7 @@ public class MovieContentProvider extends ContentProvider {
                 // Insert new values into the database
                 // Inserting values into tasks table
                 long id = db.insert(TABLE_NAME, null, values);
-                if ( id > 0 ) {
+                if (id > 0) {
                     returnUri = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -118,7 +118,7 @@ public class MovieContentProvider extends ContentProvider {
         switch (match) {
             // Query for the tasks directory
             case MOVIES:
-                retCursor =  db.query(TABLE_NAME,
+                retCursor = db.query(TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -162,7 +162,7 @@ public class MovieContentProvider extends ContentProvider {
                 // Get the task ID from the URI path
 //                String id = uri.getPathSegments().get(1);
                 // Use selections/selectionArgs to filter for this ID
-                tasksDeleted = db.delete(TABLE_NAME, selection,selectionArgs);
+                tasksDeleted = db.delete(TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -185,39 +185,6 @@ public class MovieContentProvider extends ContentProvider {
 
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
-
-//    // Update won't be used in the final ToDoList app but is implemented here for completeness
-//    // This updates a single item (by it's ID) in the tasks directory
-//    @Override
-//    public int update(@NonNull Uri uri, ContentValues values, String selection,
-//                      String[] selectionArgs) {
-//
-//        //Keep track of if an update occurs
-//        int tasksUpdated;
-//
-//        // match code
-//        int match = sUriMatcher.match(uri);
-//
-//        switch (match) {
-//            case TASK_WITH_ID:
-//                //update a single task by getting the id
-//                String id = uri.getPathSegments().get(1);
-//                //using selections
-//                tasksUpdated = mTaskDbHelper.getWritableDatabase().update(TABLE_NAME, values, "_id=?", new String[]{id});
-//                break;
-//            default:
-//                throw new UnsupportedOperationException("Unknown uri: " + uri);
-//        }
-//
-//        if (tasksUpdated != 0) {
-//            //set notifications if a task was updated
-//            getContext().getContentResolver().notifyChange(uri, null);
-//        }
-//
-//        // return number of tasks updated
-//        return tasksUpdated;
-//    }
 
 
     @Override

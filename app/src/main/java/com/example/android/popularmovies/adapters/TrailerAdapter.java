@@ -63,7 +63,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         // This is how we use Picasso to load images from the internet.
         Picasso.with(mContext)
                 .load(thumbnailUrl)
-//                .placeholder(R.drawable.progress_animation)
                 .into(holder.mThumbnail, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {

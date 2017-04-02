@@ -38,4 +38,24 @@
     <string name="settings_sort_by_favorites_label">Favorites</string>
     <string name="settings_sort_by_favorites_value" translatable="false">favorites</string>
 
+
+    <string name="no_review_error_msg">No reviews are available for the given movie</string>
+    <string name="no_trailer_error_msg">No trailers are available for the given movie</string>
+    <string name="no_internet">No Internet Connection</string>
+    <string name="movie_trailers">Movie Trailers</string>
+    <string name="movie_reviews">Movie Reviews</string>
+    <string name="default_author">Author 1</string>
+    <string name="default_review">Test Review</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="error_no_data_detail">ERROR No data was read</string>
+    <string name="no_trailer_share">No trailer available for this movie</string>
+    <string name="no_internet_share">No Internet Connection: Unable to get trailer url</string>
+    <string name="movie_added_favorites">Movie added to favorites!</string>
+    <string name="movie_removed_favorites">Movie removed from favorites!</string>
+    <string name="youtube_base">http://www.youtube.com/watch?v=</string>
+    <string name="youtube_player_base">vnd.youtube:</string>
+    <string name="no_internet_main">No Internet Connection</string>
+    <string name="problem_movie_data">Problem getting movies data</string>
+
 </resources>

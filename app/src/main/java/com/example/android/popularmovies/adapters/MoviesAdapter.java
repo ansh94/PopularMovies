@@ -34,8 +34,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     }
 
 
-    public MoviesAdapter(Context context, MoviesAdapterOnClickHandler clickHandler)
-    {
+    public MoviesAdapter(Context context, MoviesAdapterOnClickHandler clickHandler) {
         this.mContext = context;
         mClickHandler = clickHandler;
         this.mInflater = LayoutInflater.from(context);
@@ -44,7 +43,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.row_movie,parent,false);
+        View view = mInflater.inflate(R.layout.row_movie, parent, false);
         MovieViewHolder viewHolder = new MovieViewHolder(view);
         return viewHolder;
     }
@@ -63,29 +62,26 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public int getItemCount() {
-        if(mMoviesList!=null){
+        if (mMoviesList != null) {
             return mMoviesList.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
 
-    public void setMovieList(List<Movie> moviesList){
+    public void setMovieList(List<Movie> moviesList) {
         this.mMoviesList.clear();
         this.mMoviesList.addAll(moviesList);
         // The adapter needs to know that the data has changed. If we don't call this, app will crash.
         notifyDataSetChanged();
     }
 
-    public ArrayList<Movie> getMovies(){
+    public ArrayList<Movie> getMovies() {
         return (ArrayList<Movie>) mMoviesList;
     }
 
 
-
-
-    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mImageView;
 

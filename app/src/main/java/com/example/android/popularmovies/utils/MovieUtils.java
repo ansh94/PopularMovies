@@ -48,7 +48,7 @@ public final class MovieUtils {
 
 
     public static List<Movie> fetchMovieData(String requestUrl) {
-        Log.i(LOG_TAG, "TEST: fetchMovieData() called.....");
+        //Log.i(LOG_TAG, "TEST: fetchMovieData() called.....");
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -69,7 +69,7 @@ public final class MovieUtils {
     }
 
     public static List<Trailer> fetchTrailerData(String requestUrl) {
-        Log.i(LOG_TAG, "TEST: fetchTrailerData() called.....");
+        //Log.i(LOG_TAG, "TEST: fetchTrailerData() called.....");
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -90,7 +90,7 @@ public final class MovieUtils {
     }
 
     public static List<Review> fetchReviewData(String requestUrl) {
-        Log.i(LOG_TAG, "TEST: fetchReviewData() called.....");
+        //Log.i(LOG_TAG, "TEST: fetchReviewData() called.....");
 
         // Create URL object
         URL url = createUrl(requestUrl);

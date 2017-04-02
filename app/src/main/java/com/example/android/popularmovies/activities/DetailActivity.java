@@ -3,16 +3,17 @@ package com.example.android.popularmovies.activities;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapters.ReviewsAdapter;
 import com.example.android.popularmovies.adapters.TrailerAdapter;
@@ -56,6 +58,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private View parentView;
 
     private Movie movie;
+    private String posterPath;
 
 
     private TextView detailTitle;
@@ -67,8 +70,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private TextView mErrorMessageDisplay;
     private TextView rErrorMessageDisplay;
 
-    //    private Button mButtonMarkAsFavorite;
-//    private Button mButtonRemoveFromFavorites;
+
     private LikeButton likeButton;
 
 
@@ -80,7 +82,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private static final String TRAILER_BASE_URL = "/videos";
     private static final String REVIEW_BASE_URL = "/reviews";
 
-    private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+    private static final String API_BASE = "?api_key=";
+    private static final String API_KEY = BuildConfig.THE_MOVIE_DATABASE_API_KEY;
+    private static final String API = API_BASE + API_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,19 +100,29 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             setup();
             updateFavoriteButtons();
 
-            String trailerUrl = MOVIE_DB_BASE_URL + movie.getId() + TRAILER_BASE_URL + API_KEY;
-            Log.d(LOG_TAG, "Final trailer URL = " + trailerUrl);
-
-            String reviewUrl = MOVIE_DB_BASE_URL + movie.getId() + REVIEW_BASE_URL + API_KEY;
-            Log.d(LOG_TAG, "Final review URL = " + reviewUrl);
+            String trailerUrl = MOVIE_DB_BASE_URL + movie.getId() + TRAILER_BASE_URL + API;
+            String reviewUrl = MOVIE_DB_BASE_URL + movie.getId() + REVIEW_BASE_URL + API;
 
 
             // Load Title text
             detailTitle.setText(movie.getTitle());
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String sortBy = preferences.getString(
+                    getString(R.string.settings_sort_by_key),
+                    getString(R.string.settings_sort_by_default)
+            );
+
+            if (sortBy.equals("favorites")) {
+                posterPath = movie.getFavoritePoster();
+            } else {
+                posterPath = movie.getPoster();
+            }
+
+
             // Load image in Image View
             Picasso.with(this)
-                    .load(movie.getPoster())
+                    .load(posterPath)
                     .placeholder(R.mipmap.ic_launcher)
                     .into(detailImage);
 
@@ -133,21 +147,19 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 loadReviewData(reviewUrl);
 
             } else {
-
-
-                showErrorMessage("No Internet Connection");
+                showErrorMessage(getString(R.string.no_internet));
             }
 
 
         } else {
-            Toast.makeText(this, "ERROR No data was read", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_no_data_detail, Toast.LENGTH_LONG).show();
         }
 
 
     }
 
     public void updateFavoriteButtons() {
-        // Needed to avoid "skip frames".
+
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -158,36 +170,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             protected void onPostExecute(Boolean isFavorite) {
                 if (isFavorite) {
-//                    mButtonRemoveFromFavorites.setVisibility(View.VISIBLE);
-//                    mButtonMarkAsFavorite.setVisibility(View.GONE);
                     likeButton.setLiked(true);
-
-
                 } else {
-//                    mButtonMarkAsFavorite.setVisibility(View.VISIBLE);
-//                    mButtonRemoveFromFavorites.setVisibility(View.GONE);
                     likeButton.setLiked(false);
                 }
 
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-//        mButtonMarkAsFavorite.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        markAsFavorite();
-//                    }
-//                });
-//
-//
-//        mButtonRemoveFromFavorites.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        removeFromFavorites();
-//                    }
-//                });
 
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
@@ -260,11 +250,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
 
-
     private void setup() {
-
-//        mButtonMarkAsFavorite = (Button) findViewById(R.id.button_mark_as_favorite);
-//        mButtonRemoveFromFavorites = (Button) findViewById(R.id.button_remove_from_favorites);
 
         likeButton = (LikeButton) findViewById(R.id.star_button);
 
@@ -365,23 +351,27 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         String mimeType = "text/plain";
         String title = "Share Movie Trailer";
 
+        if(trailerList!=null){
+            if (trailerList.size() == 0) {
+                Toast.makeText(this, R.string.no_trailer_share, Toast.LENGTH_SHORT).show();
+            } else if (trailerList.size() > 0) {
+                //gets the first trailer video
+                Trailer trailer = trailerList.get(0);
 
-        if (trailerList != null) {
-            //gets the first trailer video
-            Trailer trailer = trailerList.get(0);
+                //gets the trailer name
+                String trailerName = trailer.gettName();
+                //gets the first trailer url
+                String trailerUrl = trailer.getTrailerUrl();
 
-            //gets the trailer name
-            String trailerName = trailer.gettName();
-            //gets the first trailer url
-            String trailerUrl = trailer.getTrailerUrl();
-
-            ShareCompat.IntentBuilder.from(this)
-                    .setChooserTitle(title)
-                    .setType(mimeType)
-                    .setText(trailerName + "\n" + trailerUrl)
-                    .startChooser();
-        } else {
-            Toast.makeText(this, "No Internet Connection: Unable to get trailer url", Toast.LENGTH_SHORT).show();
+                ShareCompat.IntentBuilder.from(this)
+                        .setChooserTitle(title)
+                        .setType(mimeType)
+                        .setText(trailerName + "\n" + trailerUrl)
+                        .startChooser();
+            }
+        }
+        else {
+            Toast.makeText(this, R.string.no_internet_share, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -412,10 +402,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                             movieValues
                     );
 
-                    // Display the URI that's returned with a Toast
-                    if (uri != null) {
-                        Log.d(LOG_TAG, "Uri = " + uri.toString());
-                    }
+
 
 
                 }
@@ -425,8 +412,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             protected void onPostExecute(Void aVoid) {
                 updateFavoriteButtons();
-//                Toast.makeText(getBaseContext(), "Movie added to favourites!", Toast.LENGTH_LONG).show();
-                Snackbar.make(parentView, "Movie added to favorites!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parentView, R.string.movie_added_favorites, Snackbar.LENGTH_LONG).show();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -438,10 +424,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             protected Void doInBackground(Void... params) {
                 if (isFavorite()) {
-                    int moviesDeleted = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                    getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
                             MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + movie.getId(), null);
-
-                    Log.d(LOG_TAG, "No of movies deleted = " + moviesDeleted);
 
                 }
                 return null;
@@ -450,8 +434,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             protected void onPostExecute(Void aVoid) {
                 updateFavoriteButtons();
-//                Toast.makeText(getBaseContext(), "Movie removed from favourites!", Toast.LENGTH_LONG).show();
-                Snackbar.make(parentView, "Movie removed from favorites!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parentView, R.string.movie_removed_favorites, Snackbar.LENGTH_LONG).show();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -459,9 +442,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void onClick(Trailer trailer) {
-        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailer.gettKey()));
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.youtube_player_base) + trailer.gettKey()));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://www.youtube.com/watch?v=" + trailer.gettKey()));
+                Uri.parse(getString(R.string.youtube_base) + trailer.gettKey()));
         try {
             startActivity(appIntent);
         } catch (ActivityNotFoundException ex) {
@@ -492,11 +475,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         protected void onPostExecute(List<Trailer> trailers) {
 
 
-            if (trailers != null) {
+            if (trailers.size() == 0) {
+                mErrorMessageDisplay.setText(R.string.no_trailer_error_msg);
+                mErrorMessageDisplay.setVisibility(View.VISIBLE);
+            }
+            if (trailers.size() > 0) {
                 showTrailerDataView();
                 tAdapter.setTrailerList(trailers);
-            } else {
-                showErrorMessage("Problem getting trailer data");
             }
 
         }
@@ -525,11 +510,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         @Override
         protected void onPostExecute(List<Review> reviews) {
 
-            if(reviews.size()==0){
-                rErrorMessageDisplay.setText("No reviews are available for the given movie");
+            if (reviews.size() == 0) {
+                rErrorMessageDisplay.setText(R.string.no_review_error_msg);
                 rErrorMessageDisplay.setVisibility(View.VISIBLE);
             }
-            if (reviews.size()>0) {
+            if (reviews.size() > 0) {
                 showReviewDataView();
                 reviewAdapter.setReviewList(reviews);
             }

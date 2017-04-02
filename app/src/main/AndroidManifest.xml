@@ -26,12 +26,6 @@
                 android:value="com.example.android.popularmovies.activities.MainActivity"/>
         </activity>
 
-        <activity android:name=".activities.FavoriteDetailActivity"
-                  android:label="@string/detail_title">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.popularmovies.activities.MainActivity"/>
-        </activity>
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/settings_title">

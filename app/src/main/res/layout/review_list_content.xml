@@ -9,35 +9,39 @@
 
     <TextView
         android:id="@+id/review_author"
-        android:text="Author 1"
-        android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/default_author"/>
 
     <TextView
         android:id="@+id/review_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:ellipsize="end"
         android:maxLines="3"
-        android:text="Test Review"
+        android:text="@string/default_review"
         android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/review_expand_more"
-        android:text="Show more"
-        android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/show_more"/>
 
     <TextView
         android:id="@+id/review_expand_less"
-        android:text="Show less"
-        android:layout_marginLeft="10dp"
-        android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/show_less"
+        android:visibility="gone"/>
 
 </LinearLayout>

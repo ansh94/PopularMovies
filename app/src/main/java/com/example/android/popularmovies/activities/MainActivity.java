@@ -12,13 +12,13 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapters.CustomCursorAdapter;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
@@ -54,13 +54,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private static final String MOVIE_DB_BASE_URL =
             "https://api.themoviedb.org/3/movie/";
 
-    private static final String API_KEY = "?api_key=81e7fc2c7ca7d07a315d5209367438ce";
+    private static final String API_BASE = "?api_key=";
+    private static final String API_KEY = BuildConfig.THE_MOVIE_DATABASE_API_KEY;
+    private static final String API = API_BASE + API_KEY;
 
     private String sortBy;
     private List<Movie> moviesList;
 
 
-    String finalUrl;
+    private String finalUrl;
 
     private TextView mErrorMessageDisplay;
 
@@ -109,11 +111,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         }
 
-        Log.d(LOG_TAG, "In onCreate method!");
 
         if (savedInstanceState != null) {
             sortBy = savedInstanceState.getString(EXTRA_SORT_BY);
-            Log.d(LOG_TAG, "onSaveInstanceState is not null and sort by = " + sortBy);
+
             if (sortBy.equals("favorites")) {
                 mRecyclerView.setAdapter(cAdapter);
             } else {
@@ -128,8 +129,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         } else {
 
             if (!sortBy.equals("favorites")) {
-                finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
-                Log.d(LOG_TAG, "Final URL = " + finalUrl);
+                finalUrl = MOVIE_DB_BASE_URL + sortBy + API;
 
 
                 // If there is a network connection, fetch data
@@ -142,14 +142,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     // First, hide loading indicator so error message will be visible
                     mLoadingIndicator.setVisibility(View.GONE);
 
-                    showErrorMessage("No Internet Connection");
+                    showErrorMessage(getString(R.string.no_internet_main));
                 }
             }
 
 
         }
-
-
 
 
         /*
@@ -173,11 +171,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 getString(R.string.settings_sort_by_key),
                 getString(R.string.settings_sort_by_default)
         );
+
         getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
-        Log.d(LOG_TAG, "In onResume() Current value = " + currentValue);
-        Log.d(LOG_TAG, "In onResume() sortBy value = " + sortBy);
-
-
 
 
         if (!currentValue.equals("favorites")) {
@@ -186,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             if (MovieUtils.checkConnection(this)) {
 
                 mRecyclerView.setAdapter(mAdapter);
-                finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+                finalUrl = MOVIE_DB_BASE_URL + sortBy + API;
                 loadMovieData(finalUrl);
 
             } else {
@@ -194,13 +189,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 // First, hide loading indicator so error message will be visible
                 mLoadingIndicator.setVisibility(View.GONE);
 
-                showErrorMessage("No Internet Connection");
+                showErrorMessage(getString(R.string.no_internet_main));
             }
-        }
-        else if(currentValue.equals("favorites")){
+        } else if (currentValue.equals("favorites")) {
+
             getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
-            Log.d(LOG_TAG,"movies size = " + cAdapter.getFavoriteMoviesSize());
-            Log.d(LOG_TAG,"cursor item size = " + cAdapter.getItemCount());
+
+
             mRecyclerView.setAdapter(cAdapter);
         }
 
@@ -209,12 +204,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             if (sortBy.equals("favorites")) {
 
                 showMovieDataView();
-
-
-
                 getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
                 mRecyclerView.setAdapter(cAdapter);
-
 
             } else if (!sortBy.equals("favorites")) {
 
@@ -223,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 if (MovieUtils.checkConnection(this)) {
 
                     mRecyclerView.setAdapter(mAdapter);
-                    finalUrl = MOVIE_DB_BASE_URL + sortBy + API_KEY;
+                    finalUrl = MOVIE_DB_BASE_URL + sortBy + API;
                     loadMovieData(finalUrl);
 
                 } else {
@@ -231,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     // First, hide loading indicator so error message will be visible
                     mLoadingIndicator.setVisibility(View.GONE);
 
-                    showErrorMessage("No Internet Connection");
+                    showErrorMessage(getString(R.string.no_internet_main));
                 }
 
 
@@ -303,8 +294,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             public Cursor loadInBackground() {
                 // Will implement to load data
 
-                // Query and load all task data in the background; sort by priority
-                // [Hint] use a try/catch block to catch any errors in loading data
+                // Query and load all task data in the background;
 
                 try {
                     return getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
@@ -314,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                             null);
 
                 } catch (Exception e) {
-                    Log.e(LOG_TAG, "Failed to asynchronously load data.");
                     e.printStackTrace();
                     return null;
                 }
@@ -337,19 +326,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-//        ArrayList<Movie> favoriteMovies = cAdapter.getFavoriteMovies();
-//
-//
-//        if(favoriteMovies.isEmpty()){
-//            mErrorMessageDisplay.setText("");
-//        }
-
         // Update the data that the adapter uses to create ViewHolders
         cAdapter.swapCursor(data);
-        Log.d(LOG_TAG,"Cursor count = "+ cAdapter.getItemCount());
-//        Log.d(LOG_TAG,"Movies arraylist size = " + cAdapter.getFavoriteMovies().size());
-
+        cAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -366,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public void onFavoriteMovieClick(Movie movie) {
-        Intent intent = new Intent(MainActivity.this, FavoriteDetailActivity.class);
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra("Movie", movie);
         startActivity(intent);
 
@@ -401,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 showMovieDataView();
                 updateUi(movies);
             } else {
-                showErrorMessage("Problem getting movies data");
+                showErrorMessage(getString(R.string.problem_movie_data));
             }
 
         }
@@ -433,14 +412,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        Log.d(LOG_TAG, "inside onSaveInstanceState");
-
         ArrayList<Movie> movies = mAdapter.getMovies();
         if (movies != null && !movies.isEmpty()) {
             outState.putParcelableArrayList(EXTRA_MOVIES, movies);
         }
         outState.putString(EXTRA_SORT_BY, sortBy);
-
 
     }
 }

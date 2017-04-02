@@ -18,7 +18,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
     }
 
-    public static class MoviePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener{
+    public static class MoviePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -57,9 +57,6 @@ public class SettingsActivity extends AppCompatActivity {
             onPreferenceChange(preference, preferenceString);
         }
     }
-
-
-
 
 
 }
