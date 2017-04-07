@@ -11,9 +11,14 @@ Add your private api key in local **gradle.properties** file (TheMovieDatabaseAp
 * Watch trailers
 * Read reviews
 
-License
-=======
+## Screenshots
+<img src="https://cloud.githubusercontent.com/assets/8283065/24790217/e9e16c12-1b93-11e7-8833-7bfc4e4f7276.png" width="40%"></img></br>
+<img src="https://cloud.githubusercontent.com/assets/8283065/24790238/0296cd38-1b94-11e7-962e-9bf616da151b.png" width="40%"></img><br>
+<img src="https://cloud.githubusercontent.com/assets/8283065/24790291/0feb734e-1b94-11e7-9774-7f6794e5d029.png" width="40%"></img>
 
+
+
+## License
     Copyright 2017 Anshdeep Singh
 
     Licensed under the Apache License, Version 2.0 (the "License");
