@@ -13,8 +13,8 @@ Add your private api key in local **gradle.properties** file (TheMovieDatabaseAp
 
 ## Screenshots
 <img src="https://cloud.githubusercontent.com/assets/8283065/24790217/e9e16c12-1b93-11e7-8833-7bfc4e4f7276.png" width="40%"></img></br>
-<img src="https://cloud.githubusercontent.com/assets/8283065/24790238/0296cd38-1b94-11e7-962e-9bf616da151b.png" width="40%"></img><br>
-<img src="https://cloud.githubusercontent.com/assets/8283065/24790291/0feb734e-1b94-11e7-9774-7f6794e5d029.png" width="40%"></img>
+<img src="https://cloud.githubusercontent.com/assets/8283065/24923809/5cdeb38a-1f10-11e7-8f44-13fe035f09f8.png" width="40%"></img><br>
+<img src="https://cloud.githubusercontent.com/assets/8283065/24923821/63ec7784-1f10-11e7-970d-a1e526d6b1e8.png" width="40%"></img>
 
 
 
