@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:theme="@style/AppDetailTheme"
             android:name=".activities.DetailActivity"
             android:label="@string/detail_title">
             <meta-data

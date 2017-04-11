@@ -105,13 +105,12 @@ public final class MovieUtils {
 
         // Extract relevant fields from the JSON response and create a list of {@link Earthquake}s
         List<Review> reviews = extractReviewFeatureFromJson(jsonResponse);
-        Log.d(LOG_TAG,"Reviews size: "+reviews.size());
+        Log.d(LOG_TAG, "Reviews size: " + reviews.size());
 
 
         // Return the list of {@link Earthquake}s
         return reviews;
     }
-
 
 
     private static List<Trailer> extractTrailerFeatureFromJson(String jsonResponse) {
@@ -137,7 +136,6 @@ public final class MovieUtils {
                 // Extract the value for the key called "mag"
                 String trailerKey = currentTrailer.getString("key");
                 String trailerName = currentTrailer.getString("name");
-
 
 
                 //Log.d(LOG_TAG,"Movie id = " + id);
@@ -182,7 +180,6 @@ public final class MovieUtils {
                 String reviewUrl = currentReview.getString("url");
 
 
-
                 //Log.d(LOG_TAG,"Movie id = " + id);
                 // Create a new {@link Earthquake} object with the magnitude, location, time,
                 // and url from the JSON response.
@@ -199,7 +196,6 @@ public final class MovieUtils {
         }
         return reviews;
     }
-
 
 
     /**
@@ -300,6 +296,7 @@ public final class MovieUtils {
 
                 // Extract the value for the key called "mag"
                 String posterPath = currentMovie.getString("poster_path");
+                String backdropPath = currentMovie.getString("backdrop_path");
                 String overview = currentMovie.getString("overview");
                 String releaseDate = currentMovie.getString("release_date");
                 String id = currentMovie.getString("id");
@@ -314,6 +311,7 @@ public final class MovieUtils {
                 movie.setId(id);
 
                 movie.setPoster(posterPath);
+                movie.setBackdrop(backdropPath);
                 movie.setDescription(overview);
                 movie.setReleaseDate(releaseDate);
                 movie.setTitle(title);
@@ -328,7 +326,7 @@ public final class MovieUtils {
         return movies;
     }
 
-    public static boolean checkConnection(Context context){
+    public static boolean checkConnection(Context context) {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 

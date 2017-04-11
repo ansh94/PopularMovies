@@ -126,6 +126,7 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
             int movieIdIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
             int movieTitleIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
             int moviePosterIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH);
+            int movieBackdropIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH);
             int movieDescriptionIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION);
             int movieRatingIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
             int movieDateIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
@@ -136,6 +137,7 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
                 String movieId = c.getString(movieIdIndex);
                 String movieTitle = c.getString(movieTitleIndex);
                 String posterPath = c.getString(moviePosterIndex);
+                String backdropPath = c.getString(movieBackdropIndex);
                 String movieDescription = c.getString(movieDescriptionIndex);
                 String movieRating = c.getString(movieRatingIndex);
                 String movieDate = c.getString(movieDateIndex);
@@ -144,6 +146,7 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
                 movie.setId(movieId);
                 movie.setTitle(movieTitle);
                 movie.setPoster(posterPath);
+                movie.setBackdrop(backdropPath);
                 movie.setDescription(movieDescription);
                 movie.setUserRating(Double.parseDouble(movieRating));
                 movie.setReleaseDate(movieDate);

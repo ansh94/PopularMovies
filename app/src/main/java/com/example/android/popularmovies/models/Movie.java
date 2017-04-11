@@ -15,6 +15,8 @@ public class Movie implements Parcelable {
 
     private String mPoster;
 
+    private String mBackdrop;
+
     private String mDescription;
 
     private double mUserRating;
@@ -24,6 +26,8 @@ public class Movie implements Parcelable {
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
 
     private static final String IMAGE_SIZE = "w185/";
+
+    private static final String BACKDROP_SIZE = "w342/";
 
 
     // Normal actions performed by class, since this is still a normal object!
@@ -38,6 +42,7 @@ public class Movie implements Parcelable {
         mId = in.readString();
         mTitle = in.readString();
         mPoster = in.readString();
+        mBackdrop = in.readString();
         mDescription = in.readString();
         mReleaseDate = in.readString();
         mUserRating = in.readDouble();
@@ -75,6 +80,9 @@ public class Movie implements Parcelable {
         mPoster = poster;
     }
 
+    public void setBackdrop(String backdrop) {
+        mBackdrop = backdrop;
+    }
 
 
     public void setDescription(String description) {
@@ -94,8 +102,16 @@ public class Movie implements Parcelable {
         return IMAGE_BASE_URL + IMAGE_SIZE + mPoster;
     }
 
+    public String getBackdrop() {
+        return IMAGE_BASE_URL + BACKDROP_SIZE + mBackdrop;
+    }
+
     public String getFavoritePoster() {
         return  mPoster;
+    }
+
+    public String getFavoriteBackdrop() {
+        return  mBackdrop;
     }
 
 
@@ -113,6 +129,7 @@ public class Movie implements Parcelable {
         parcel.writeString(mId);
         parcel.writeString(mTitle);
         parcel.writeString(mPoster);
+        parcel.writeString(mBackdrop);
         parcel.writeString(mDescription);
         parcel.writeString(mReleaseDate);
         parcel.writeDouble(mUserRating);

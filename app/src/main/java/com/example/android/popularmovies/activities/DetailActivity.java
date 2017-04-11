@@ -9,11 +9,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,9 +62,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private Movie movie;
     private String posterPath;
+    private String backdropPath;
+
+    private CollapsingToolbarLayout collapsingToolbar;
+
+    private ImageView movieBackdrop;
 
 
-    private TextView detailTitle;
     private ImageView detailImage;
     private TextView detailReleaseDate;
     private TextView detailUserRating;
@@ -91,6 +98,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+
         Intent intent = getIntent();
 
         movie = intent.getParcelableExtra("Movie");
@@ -104,8 +112,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             String reviewUrl = MOVIE_DB_BASE_URL + movie.getId() + REVIEW_BASE_URL + API;
 
 
-            // Load Title text
-            detailTitle.setText(movie.getTitle());
+            // Set title of Detail page
+            collapsingToolbar.setTitle(movie.getTitle());
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             String sortBy = preferences.getString(
@@ -115,9 +123,19 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
             if (sortBy.equals("favorites")) {
                 posterPath = movie.getFavoritePoster();
+                backdropPath = movie.getFavoriteBackdrop();
             } else {
                 posterPath = movie.getPoster();
+                backdropPath = movie.getBackdrop();
             }
+
+
+            Log.d(DetailActivity.class.getSimpleName(), "backdrop Path: " + backdropPath);
+            // Load image in Image View
+            Picasso.with(this)
+                    .load(backdropPath)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(movieBackdrop);
 
 
             // Load image in Image View
@@ -252,6 +270,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private void setup() {
 
+        //set the toolbar
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Set Collapsing Toolbar layout to the screen
+        collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+
+        movieBackdrop = (ImageView) findViewById(R.id.movie_backdrop);
+
+
         likeButton = (LikeButton) findViewById(R.id.star_button);
 
 
@@ -290,7 +320,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         reviewRecyclerView.setAdapter(reviewAdapter);
 
 
-        detailTitle = (TextView) findViewById(R.id.detail_title);
+//        detailTitle = (TextView) findViewById(R.id.detail_title);
         detailImage = (ImageView) findViewById(R.id.detail_image);
         detailReleaseDate = (TextView) findViewById(R.id.detail_release_date);
         detailUserRating = (TextView) findViewById(R.id.detail_user_rating);
@@ -351,7 +381,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         String mimeType = "text/plain";
         String title = "Share Movie Trailer";
 
-        if(trailerList!=null){
+        if (trailerList != null) {
             if (trailerList.size() == 0) {
                 Toast.makeText(this, R.string.no_trailer_share, Toast.LENGTH_SHORT).show();
             } else if (trailerList.size() > 0) {
@@ -369,8 +399,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         .setText(trailerName + "\n" + trailerUrl)
                         .startChooser();
             }
-        }
-        else {
+        } else {
             Toast.makeText(this, R.string.no_internet_share, Toast.LENGTH_SHORT).show();
         }
     }
@@ -389,6 +418,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                             movie.getTitle());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
                             movie.getPoster());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
+                            movie.getBackdrop());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DESCRIPTION,
                             movie.getDescription());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
@@ -401,8 +432,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                             MovieContract.MovieEntry.CONTENT_URI,
                             movieValues
                     );
-
-
 
 
                 }
